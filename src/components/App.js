@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+
+import { setTodos } from "../redux/slices/todoSlice";
 import {
   GetTodosRequest,
   AddTodoRequest,
@@ -10,7 +13,9 @@ const client = new TodoServiceClient("http://localhost:8080");
 
 function App() {
   const [inputValue, setInputValue] = useState("");
-  const [todos, setTodos] = useState([]);
+  const dispatch = useDispatch();
+
+  const todos = useSelector((state) => state.todos);
 
   const addTodo = () => {
     const req = new AddTodoRequest();
@@ -34,7 +39,7 @@ function App() {
       if (response) {
         const todosRes = response.toObject().todosList;
         console.log("LIST OF TODOS: ", todosRes);
-        setTodos(todosRes);
+        dispatch(setTodos(todosRes));
       }
     });
   };
@@ -45,7 +50,6 @@ function App() {
   };
 
   const finishHandler = (id) => {
-    console.log(id);
     const request = new FinishTodoRequest();
     request.setId(id);
 
@@ -75,8 +79,8 @@ function App() {
       <button style={{ padding: 10 }} onClick={clickHandler}>
         Add todo
       </button>
-      {todos &&
-        todos.map((elem) => {
+      {todos.todos &&
+        todos.todos.map((elem) => {
           let doneStyle = elem.done ? "black" : "red";
           return (
             <div
