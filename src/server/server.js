@@ -1,5 +1,5 @@
 const PORT = 9090;
-const PROTO_PATH = `${__dirname}/todo.proto`;
+const PROTO_PATH = "./src/grpc/todo.proto";
 
 const grpc = require("grpc");
 const protoLoader = require("@grpc/proto-loader");
@@ -56,7 +56,7 @@ function getGrpcServer() {
 }
 
 if (require.main === module) {
-  var server = getGrpcServer();
+  let server = getGrpcServer();
   server.bind(`0.0.0.0:${PORT}`, grpc.ServerCredentials.createInsecure());
   server.start();
   console.log(`Server started on port ${PORT}`);
