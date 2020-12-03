@@ -1,37 +1,57 @@
-import logo from "./logo.svg";
-import "./App.css";
-
 import {
   GetTodosRequest,
   AddTodoRequest,
   FinishTodoRequest,
 } from "./todo_pb.js";
 import { TodoServiceClient } from "./todo_grpc_web_pb.js";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const client = new TodoServiceClient("http://localhost:8080");
 
-function App() {
-  useEffect(() => {
-    console.log("useEffect");
-    const request = new GetTodosRequest();
+const getTodos = () => {
+  const request = new GetTodosRequest();
+  client.getTodos(request, {}, (err, response) => {
+    if (err) console.error(err);
+    if (response) {
+      const todos = response.toObject().todosList;
+      console.log("LIST OF TODOS: ", todos);
+    }
+  });
+};
 
-    client.getTodos(request, {}, (err, response) => {
-      if (err) console.error(err);
-      if (response) {
-        const todos = response.toObject().todosList;
-        console.log("LIST OF TODOS: ", todos);
-      }
+function App() {
+  const [inputValue, setInputValue] = useState("");
+
+  const addTodo = () => {
+    const req = new AddTodoRequest();
+    req.setText(inputValue);
+    setInputValue("");
+
+    client.addTodo(req, {}, (err, res) => {
+      if (err) console.error({ err });
+
+      const todo = res.toObject().todo;
+      console.log("NEW TODO: ", todo);
+
+      getTodos();
     });
+  };
+
+  useEffect(() => {
+    getTodos();
   }, []);
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <button style={{ padding: 10 }}>Click for grpc request</button>
-      </header>
-    </div>
+    <>
+      <input
+        type="text"
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
+      />
+      <button style={{ padding: 10 }} onClick={addTodo}>
+        Add todo
+      </button>
+    </>
   );
 }
 
