@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 let initialState = {
-  todos: 1,
+  todos: [],
 };
 
 const todosSlice = createSlice({

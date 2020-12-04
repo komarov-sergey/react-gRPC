@@ -9,13 +9,15 @@ import {
 } from "../grpc/todo_pb.js";
 import { TodoServiceClient } from "../grpc/todo_grpc_web_pb.js";
 
+import { useTranslation } from "react-i18next";
+
 const client = new TodoServiceClient("http://localhost:8080");
 
 function App() {
   const [inputValue, setInputValue] = useState("");
   const dispatch = useDispatch();
-
   const todos = useSelector((state) => state.todos);
+  const [t, i18n] = useTranslation();
 
   const addTodo = () => {
     const req = new AddTodoRequest();
@@ -67,10 +69,12 @@ function App() {
 
   useEffect(() => {
     getTodos();
+    i18n.changeLanguage("fr");
   }, []);
 
   return (
     <>
+      <h3>{t("Welcome to React")}</h3>
       <input
         type="text"
         value={inputValue}
@@ -79,7 +83,8 @@ function App() {
       <button style={{ padding: 10 }} onClick={clickHandler}>
         Add todo
       </button>
-      {todos.todos &&
+      {todos &&
+        todos.todos &&
         todos.todos.map((elem) => {
           let doneStyle = elem.done ? "black" : "red";
           return (
